@@ -108,7 +108,7 @@ export function ScheduleForm() {
     if (currentSetting) {
       form.reset(currentSetting);
     }
-  }, [currentSetting]);
+  }, [currentSetting, form]);
 
   const onSubmit = useCallback(
     async (data: ISetting) => {
@@ -125,7 +125,7 @@ export function ScheduleForm() {
         });
       }
     },
-    [currentSetting, currentUser]
+    [currentSetting, currentUser, create, update]
   );
 
   return (

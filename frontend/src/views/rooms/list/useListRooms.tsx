@@ -41,9 +41,12 @@ const useListRooms = () => {
     university_id: currentUser?.UniversityID.toString(),
   });
 
-  const onDelete = useCallback((id: string) => {
-    deleteRoom({ id: Number(id) });
-  }, []);
+  const onDelete = useCallback(
+    (id: string) => {
+      deleteRoom({ id: Number(id) });
+    },
+    [deleteRoom]
+  );
 
   useEffect(() => {
     if (deleteSuccess) {

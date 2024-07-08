@@ -41,7 +41,7 @@ export const InstructorTimetable = memo(function InstructorTimetable({
 
   const events = useMemo(() => {
     return convertToEventsBasecInstructorID(detail, timeslots, value);
-  }, [detail, value]);
+  }, [detail, value, timeslots]);
 
   const options = useMemo(() => {
     if (!instructors) return [];
@@ -81,7 +81,7 @@ export const InstructorTimetable = memo(function InstructorTimetable({
       minTime: formattedMinTime,
       maxTime: formattedMaxTime,
     };
-  }, []);
+  }, [timeslots]);
 
   return (
     <div className="calendar-container h-max">

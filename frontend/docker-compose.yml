@@ -6,6 +6,6 @@ services:
     container_name: uctp-fe
     image: uctp-fe
     restart: unless-stopped
-    # env_file: .env
-    # ports:
-    #   - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    env_file: .env
+    ports:
+      - ${FRONTEND_PORT}:${PORT}

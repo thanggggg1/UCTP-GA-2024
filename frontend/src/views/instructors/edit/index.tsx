@@ -73,7 +73,7 @@ export function EditInstructorConfig({ id }: { id?: number | string }) {
         })
       );
     },
-    []
+    [dispatch]
   );
 
   const onSave = useCallback(() => {
@@ -90,7 +90,7 @@ export function EditInstructorConfig({ id }: { id?: number | string }) {
       });
       router.push("/instructors");
     }
-  }, [id, instructorEditing, currentUser]);
+  }, [router, create, update, id, instructorEditing, currentUser]);
 
   useEffect(() => {
     if (!id) {

@@ -22,9 +22,12 @@ const useListSemesters = () => {
 
   const { data, isLoading } = useGetSemestersQuery();
 
-  const onDelete = useCallback((id: string) => {
-    deleteSemester({ id: Number(id) });
-  }, []);
+  const onDelete = useCallback(
+    (id: string) => {
+      deleteSemester({ id: Number(id) });
+    },
+    [deleteSemester]
+  );
 
   useEffect(() => {
     if (deleteSuccess) {

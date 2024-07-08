@@ -30,5 +30,5 @@ export function useCreateStatusMessages({
       toast.dismiss();
       toast.success(`${action}  ${title} thành công`);
     }
-  }, [isSuccess, isLoading, isError, error, title]);
+  }, [isSuccess, isLoading, isError, error, title, action]);
 }

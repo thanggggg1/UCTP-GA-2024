@@ -19,7 +19,7 @@ export const GridTimetable = memo(function GridTimetable({
 }) {
   const events = useMemo(() => {
     return convertToEvents(detail, timeslots);
-  }, [detail]);
+  }, [detail, timeslots]);
   const formatResouces = useMemo(() => {
     return rooms.map((room) => ({
       id: room.id.toString(),
@@ -46,7 +46,7 @@ export const GridTimetable = memo(function GridTimetable({
       minTime: formattedMinTime,
       maxTime: formattedMaxTime,
     };
-  }, []);
+  }, [timeslots]);
 
   return (
     <div className="calendar-container h-max">

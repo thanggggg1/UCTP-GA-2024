@@ -80,7 +80,7 @@ export function EditSemesterConfig({ id }: { id?: number | string }) {
         })
       );
     },
-    []
+    [dispatch]
   );
 
   const onSave = useCallback(() => {
@@ -97,7 +97,7 @@ export function EditSemesterConfig({ id }: { id?: number | string }) {
       });
       router.push("/semesters");
     }
-  }, [id, semesterEditing, currentUser]);
+  }, [create, update, router, id, semesterEditing, currentUser]);
 
   useEffect(() => {
     if (!id) {

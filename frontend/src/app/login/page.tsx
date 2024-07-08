@@ -25,7 +25,7 @@ export default function Login() {
 
   const onSubmit = useCallback(async () => {
     await signIn(params);
-  }, [params]);
+  }, [params, signIn]);
 
   useEffect(() => {
     if (isSuccess && data) {

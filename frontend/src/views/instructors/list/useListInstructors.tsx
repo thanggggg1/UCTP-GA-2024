@@ -44,9 +44,12 @@ const useListInstructors = () => {
     university_id: currentUser?.UniversityID || "",
   });
 
-  const onDelete = useCallback((id: string) => {
-    deleteInstructor({ id: Number(id) });
-  }, []);
+  const onDelete = useCallback(
+    (id: string) => {
+      deleteInstructor({ id: Number(id) });
+    },
+    [deleteInstructor]
+  );
 
   useEffect(() => {
     if (deleteSuccess) {

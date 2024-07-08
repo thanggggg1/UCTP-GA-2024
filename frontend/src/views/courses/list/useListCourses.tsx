@@ -39,9 +39,12 @@ const useListCourses = () => {
     university_id: currentUser?.UniversityID.toString() || "",
   });
 
-  const onDelete = useCallback((id: string) => {
-    deleteCourse({ id: Number(id) });
-  }, []);
+  const onDelete = useCallback(
+    (id: string) => {
+      deleteCourse({ id: Number(id) });
+    },
+    [deleteCourse]
+  );
 
   useEffect(() => {
     if (deleteSuccess) {

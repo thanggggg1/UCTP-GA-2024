@@ -80,7 +80,7 @@ export function EditCourseConfig({ id }: { id?: number | string }) {
         })
       );
     },
-    []
+    [dispatch]
   );
 
   const onSave = useCallback(() => {
@@ -100,7 +100,7 @@ export function EditCourseConfig({ id }: { id?: number | string }) {
       });
       router.push("/courses");
     }
-  }, [id, courseEditing]);
+  }, [currentUser, create, id, courseEditing]);
 
   useEffect(() => {
     if (!id) {

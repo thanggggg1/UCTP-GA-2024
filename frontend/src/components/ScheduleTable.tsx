@@ -26,7 +26,7 @@ export const ScheduleTable = memo(function ScheduleTable({
         return newSchedule;
       });
     },
-    [setSchedule]
+    [setSchedule, saveSchedule]
   );
 
   return (

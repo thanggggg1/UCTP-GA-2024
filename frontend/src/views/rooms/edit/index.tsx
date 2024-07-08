@@ -57,14 +57,17 @@ export function EditRoomConfig({ id }: { id?: number | string }) {
 
   const { data: currentUser } = useGetCurrentUserQuery();
 
-  const handleEdit = useCallback((key: keyof IRoom, value: ValueOf<IRoom>) => {
-    dispatch(
-      editRoom({
-        path: [key],
-        value,
-      })
-    );
-  }, []);
+  const handleEdit = useCallback(
+    (key: keyof IRoom, value: ValueOf<IRoom>) => {
+      dispatch(
+        editRoom({
+          path: [key],
+          value,
+        })
+      );
+    },
+    [dispatch]
+  );
 
   const onSave = useCallback(() => {
     if (id) {
@@ -76,7 +79,7 @@ export function EditRoomConfig({ id }: { id?: number | string }) {
       });
       router.push("/rooms");
     }
-  }, [id, roomEditing, currentUser]);
+  }, [create, update, router, id, roomEditing, currentUser]);
 
   useEffect(() => {
     if (!id) {

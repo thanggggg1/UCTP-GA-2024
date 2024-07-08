@@ -5,7 +5,6 @@ import storage from "redux-persist/lib/storage"; // defaults to localStorage for
 
 // Import your APIs and global slice
 import { authApi } from "./APIs/auth";
-import { globalSlice } from "./modules/global";
 import { tableSettingSlice } from "./modules/table";
 import { coursesApi } from "./APIs/courses";
 import { roomsApi } from "./APIs/rooms";
@@ -22,7 +21,6 @@ import { resultsApi } from "./APIs/result";
 
 // Root reducer combining all the reducers
 const rootReducer = combineReducers({
-  [globalSlice.name]: globalSlice.reducer,
   [tableSettingSlice.name]: tableSettingSlice.reducer,
   [authApi.reducerPath]: authApi.reducer,
   [coursesApi.reducerPath]: coursesApi.reducer,
@@ -45,7 +43,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: [globalSlice.name, tableSettingSlice.name], // Add slices you want to persist
+  whitelist: [tableSettingSlice.name], // Add slices you want to persist
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
