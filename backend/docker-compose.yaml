@@ -9,10 +9,10 @@ services:
     restart: unless-stopped
     env_file: .env
     ports:
-      - ${PORT}:${PORT}
-#    volumes:
-#      - ../backend:/app
-#      - ../backend/web/template:/template
+      - ${PORT_OUTPUT}:${PORT}
+    #    volumes:
+    #      - ../backend:/app
+    #      - ../backend/web/template:/template
     depends_on:
       - postgres
       - redis
@@ -26,8 +26,8 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_DB: ${DB_NAME}
-#    ports:
-#      - "5432:5432"
+    #    ports:
+    #      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -35,8 +35,8 @@ services:
     image: redis:latest
     container_name: redis
     restart: unless-stopped
-#    ports:
-#      - "6379:6379"
+    #    ports:
+    #      - "6379:6379"
     volumes:
       - redisdata:/data
 
