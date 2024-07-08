@@ -1,0 +1,56 @@
+version: "3.9"
+services:
+  web:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    image: accountant-app
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+    depends_on:
+      - mongodb
+      - redis
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev
+    image: accountant-frontend
+    volumes:
+      - ../frontend:/usr/app/frontend
+      - /usr/app/frontend/node_modules
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+
+  mongodb:
+    image: mongo:7.0.3
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$DB_USER
+      - MONGO_INITDB_ROOT_PASSWORD=$DB_PASS
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - /data/db
+      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - /data
+
+  # asynqmon:
+  #   image: asynqmon
+  #   environment:
+  #     - REDIS_ADDR=redis:6379
+  #   ports:
+  #     - ${ASYNQMON_PORT}:${ASYNQMON_PORT}
+  #   depends_on:
+  #     - redis

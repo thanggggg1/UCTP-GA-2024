@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: utp-app
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - ${PORT}:${PORT}
+#    volumes:
+#      - ../backend:/app
+#      - ../backend/web/template:/template
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+#    ports:
+#      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: unless-stopped
+#    ports:
+#      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+#  asynqmon:
+#    image: hibiken/asynqmon:latest
+#    container_name: asynqmon
+#    restart: unless-stopped
+#    environment:
+#      - REDIS_ADDR=redis:6379
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - redis
+
+volumes:
+  pgdata:
+  redisdata:

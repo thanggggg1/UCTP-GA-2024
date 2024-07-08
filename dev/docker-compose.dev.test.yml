@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  web:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    image: accountant-app
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+    depends_on:
+      - mongodb
+      - redis
+
+  mongodb:
+    image: mongo:7.0.3
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$DB_USER
+      - MONGO_INITDB_ROOT_PASSWORD=$DB_PASS
+    #    ports:
+    #      - ${DB_PORT}:${DB_PORT}
+    volumes:
+      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - /data/db
+
+  redis:
+    image: redis:latest
+    #    ports:
+    #      - "6379:6379"
+    volumes:
+      - /data
+
+  integration:
+    build:
+      context: ../backend
+      dockerfile: integration-test/Dockerfile
+    image: accountant-integration
+    environment:
+      - HOST=web:${BACKEND_PORT}/api
+    depends_on:
+      - web
