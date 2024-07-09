@@ -11,7 +11,8 @@ export const setCookieWithExpiry = (
     expires: new Date(new Date().getTime() + 2 * 60 * 60 * 1000),
     // expires: expires_at,
     // httpOnly: true, // Optionally, make it HTTP-only for security
-    secure: process.env.NODE_ENV === "production", // Secure flag for production
+    secure: false,
+    // secure: process.env.NODE_ENV === "production", // Secure flag for production
     sameSite: "strict", // SameSite attribute for CSRF protection
   });
 };
