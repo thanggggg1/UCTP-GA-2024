@@ -102,7 +102,7 @@ export default function Login() {
       </div>
       <div className="hidden bg-muted lg:block">
         <Image
-          src="/placeholder.svg"
+          src="/images/logo_login.png"
           alt="Image"
           width="1920"
           height="1080"

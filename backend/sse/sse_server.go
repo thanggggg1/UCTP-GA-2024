@@ -19,7 +19,6 @@ func SendSSEMessage(event string, data []byte) {
 		Event: []byte(event),
 		Data:  formattedData,
 	})
-	log.Printf("Message sent: %s", data)
 }
 
 func SSEHandler(w http.ResponseWriter, r *http.Request) {

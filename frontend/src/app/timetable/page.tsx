@@ -33,11 +33,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ETypeTable } from "@/enums/table.enum";
 import { cn } from "@/lib/utils";
 import { useGetCurrentUserQuery } from "@/store/APIs/user";
-import useListSemesters from "@/views/semesters/list/useListSemesters";
 import { TimetableView } from "@/views/timetable";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import useListSemesters from "@/views/semesters/list/useListSemesters";
 
 export default function TimetableManagement() {
   const { semesters } = useListSemesters();

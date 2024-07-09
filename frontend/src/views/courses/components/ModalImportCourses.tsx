@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useImportCoursesMutation } from "@/store/APIs/courses";
+import { useGetCurrentUserQuery } from "@/store/APIs/user";
 
 export default function ModalImportCourses({
   open,
@@ -25,6 +26,7 @@ export default function ModalImportCourses({
   onOpenChange: (open: boolean) => void;
 }) {
   const [file, setFile] = useState<File | null>(null);
+  const { data: currentUser } = useGetCurrentUserQuery();
 
   const [
     importCoursesExcel,
@@ -57,6 +59,7 @@ export default function ModalImportCourses({
       { header: "Mô tả", key: "hours", width: 20 },
       { header: "Lập lịch", key: "divisible", width: 40 },
       { header: "Loại lớp", key: "type", width: 50 },
+      { header: "Giảng viên", key: "instructor_ids", width: 50 },
     ];
     //set style for header
     worksheet.getRow(1).eachCell((cell) => {
@@ -91,10 +94,13 @@ export default function ModalImportCourses({
       toast.warning("Please select a file to import");
       return;
     }
-    importCoursesExcel({ file });
+    importCoursesExcel({
+      file,
+      university_id: currentUser?.UniversityID || "",
+    });
     setFile(null);
     hide();
-  }, [file, importCoursesExcel, hide]);
+  }, [file, importCoursesExcel, hide, currentUser?.UniversityID]);
 
   const onCanceled = useCallback(() => {
     setFile(null);

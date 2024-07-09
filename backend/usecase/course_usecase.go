@@ -2,8 +2,11 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/tealeg/xlsx"
+	"strconv"
 	"time"
 
 	"utp-ga-2024/backend/domain"
@@ -30,7 +33,6 @@ func (tu *courseUsecase) Create(c context.Context, course *domain.Course) error 
 	// Start a transaction
 	tx := tu.repo.WithContext(ctx).Begin()
 
-	// Create the semester
 	if err := tx.Create(course).Error; err != nil {
 		tx.Rollback()
 		return err
@@ -180,7 +182,16 @@ func (tu *courseUsecase) FetchByID(c context.Context, id uint) (domain.Course, e
 	return course, nil
 }
 
-func (tu *courseUsecase) ImportFromXLSX(ctx context.Context, filePath string) error {
+func (tu *courseUsecase) ImportFromXLSX(ctx context.Context, filePath string, universityID uint) error {
+	// Verify if the universityID exists
+	var university domain.University
+	if err := tu.repo.WithContext(ctx).First(&university, universityID).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return fmt.Errorf("university with ID %d does not exist", universityID)
+		}
+		return err
+	}
+
 	file, err := xlsx.OpenFile(filePath)
 	if err != nil {
 		return err
@@ -215,11 +226,19 @@ func (tu *courseUsecase) ImportFromXLSX(ctx context.Context, filePath string) er
 					course.Description = text
 				case 6:
 					course.Type = domain.RoomType(text)
+				case 7:
+					if text != "" {
+						instructorIDs, err := parseInstructorIDs(text)
+						if err != nil {
+							return err
+						}
+						course.InstructorIds = instructorIDs
+					}
 				}
 			}
 
 			course.Divisible = true
-			course.InstructorIds = []uint{}
+			course.UniversityID = universityID
 
 			courses = append(courses, course)
 		}
@@ -233,24 +252,74 @@ func (tu *courseUsecase) ImportFromXLSX(ctx context.Context, filePath string) er
 		}
 
 		if existingCourse.ID != 0 {
-			// Update existing instructor
+			// Update existing course
 			existingCourse.CodeHp = course.CodeHp
 			existingCourse.Name = course.Name
 			existingCourse.Hours = course.Hours
 			existingCourse.Description = course.Description
 			existingCourse.Divisible = course.Divisible
 			existingCourse.Type = course.Type
+			existingCourse.InstructorIds = course.InstructorIds
+			existingCourse.UniversityID = universityID
 
 			if err := tu.repo.WithContext(ctx).Save(&existingCourse).Error; err != nil {
 				return err
+			}
+			// Update instructor associations
+			if len(course.InstructorIds) > 0 {
+				var instructors []domain.Instructor
+				if err := tu.repo.WithContext(ctx).Where("id IN ?", course.InstructorIds).Find(&instructors).Error; err != nil {
+					return err
+				}
+				if err := tu.repo.WithContext(ctx).Model(&existingCourse).Association("Instructors").Replace(instructors); err != nil {
+					return err
+				}
 			}
 		} else {
 			// Create new course
 			if err := tu.repo.WithContext(ctx).Create(&course).Error; err != nil {
 				return err
 			}
+			// Set instructor associations
+			if len(course.InstructorIds) > 0 {
+				var instructors []domain.Instructor
+				if err := tu.repo.WithContext(ctx).Where("id IN ?", course.InstructorIds).Find(&instructors).Error; err != nil {
+					return err
+				}
+				if err := tu.repo.WithContext(ctx).Model(&course).Association("Instructors").Replace(instructors); err != nil {
+					return err
+				}
+			}
 		}
 	}
 
 	return nil
+}
+
+func parseInstructorIDs(input string) ([]uint, error) {
+	var rawIDs []interface{}
+	var ids []uint
+
+	// Unmarshal the input JSON string into a slice of empty interfaces
+	if err := json.Unmarshal([]byte(input), &rawIDs); err != nil {
+		return nil, fmt.Errorf("failed to parse instructor IDs: %v", err)
+	}
+
+	// Process each element in the rawIDs slice
+	for _, rawID := range rawIDs {
+		switch id := rawID.(type) {
+		case float64: // For JSON numbers
+			ids = append(ids, uint(id))
+		case string: // For JSON strings
+			numID, err := strconv.Atoi(id)
+			if err != nil {
+				return nil, fmt.Errorf("invalid instructor ID: %v", id)
+			}
+			ids = append(ids, uint(numID))
+		default:
+			return nil, fmt.Errorf("unsupported ID format: %v", rawID)
+		}
+	}
+
+	return ids, nil
 }

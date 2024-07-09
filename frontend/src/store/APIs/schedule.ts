@@ -21,7 +21,14 @@ export const schedulesApi = createApi({
       }),
       invalidatesTags: ["schedules"],
     }),
+    clearEventStream: builder.query<void, void>({
+      query: () => ({
+        url: `/schedule`,
+      }),
+      providesTags: ["schedules"],
+    }),
   }),
 });
 
-export const { useUpsertScheduleMutation } = schedulesApi;
+export const { useUpsertScheduleMutation, useClearEventStreamQuery } =
+  schedulesApi;

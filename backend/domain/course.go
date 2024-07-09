@@ -26,5 +26,5 @@ type CourseUsecase interface {
 	Delete(c context.Context, id uint) error
 	FetchAll(c context.Context, filter map[string]interface{}) ([]Course, error)
 	FetchByID(c context.Context, id uint) (Course, error)
-	ImportFromXLSX(c context.Context, filePath string) error // New method
+	ImportFromXLSX(c context.Context, filePath string, universityID uint) error // New method
 }

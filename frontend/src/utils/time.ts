@@ -12,6 +12,7 @@ export function convertToEvents(
 
   Object.entries(topChromosomes).forEach(([courseId, courseDetail]) => {
     Object.entries(courseDetail.Details).forEach(([detailId, detail]) => {
+      if (detail.Days === null) return;
       const dayName = daysOfWeek[detail.Days[0] - 1];
       const dayOffset = detail.Days[0] - 1; // Days are 1-based
       const startDate = new Date(currentDate.setDate(startOfWeek + dayOffset));
@@ -61,6 +62,8 @@ export function convertToEventsBasecInstructorID(
 
   Object.entries(topChromosomes).forEach(([courseId, courseDetail]) => {
     Object.entries(courseDetail.Details).forEach(([detailId, detail]) => {
+      if (detail.Days === null) return;
+
       if (detail.InstructorID.toString() === instructorID) {
         const dayName = daysOfWeek[detail.Days[0] - 1];
         const dayOffset = detail.Days[0] - 1; // Days are 1-based
@@ -102,21 +105,22 @@ export function convertToEventsBasecInstructorID(
 }
 
 const colors = [
-  "#FF5733", // Red
-  "#33FF57", // Green
-  "#3357FF", // Blue
-  "#FFFF33", // Yellow
-  "#FF33FF", // Magenta
-  "#33FFFF", // Cyan
-  "#FFA500", // Orange
-  "#800080", // Purple
-  "#00FF00", // Lime
-  "#0000FF", // Navy
-  "#FF00FF", // Fuchsia
-  "#00FFFF", // Aqua
-  "#808000", // Olive
-  "#008080", // Teal
-  "#C0C0C0", // Silver
+  "#1E90FF", // Dodger Blue
+  "#FF4500", // Orange Red
+  "#32CD32", // Lime Green
+  "#8A2BE2", // Blue Violet
+  "#FF1493", // Deep Pink
+  "#FF6347", // Tomato
+  "#40E0D0", // Turquoise
+  "#FFD700", // Gold
+  "#FF69B4", // Hot Pink
+  "#4169E1", // Royal Blue
+  "#00FA9A", // Medium Spring Green
+  "#FF8C00", // Dark Orange
+  "#FF00FF", // Magenta
+  "#00CED1", // Dark Turquoise
+  "#7B68EE", // Medium Slate Blue
+  "#DC143C", // Crimson
 ];
 
 function pickRandomColor(excludeColor: string = "#FFFFFF"): string {

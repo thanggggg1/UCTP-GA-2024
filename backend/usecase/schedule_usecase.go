@@ -40,10 +40,16 @@ func (uc *scheduleUsecase) HandleScheduleTask(ctx context.Context, t *asynq.Task
 	if err != nil {
 		return err
 	}
+	log.Printf("data: %+v", data)
 	// Run your genetic algorithm here and save the result
 	geneticAlgorithm := NewGeneticAlgorithm(data, clientChan, uc.db, payload.UniversityID, payload.SemesterID)
 	geneticAlgorithm.RunGeneration()
 
+	return nil
+}
+
+func (uc *scheduleUsecase) ClearEventStream() error {
+	sse.ClearStream()
 	return nil
 }
 

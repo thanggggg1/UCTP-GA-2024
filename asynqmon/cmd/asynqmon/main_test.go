@@ -22,7 +22,7 @@ func TestParseFlags(t *testing.T) {
 				RedisDB:   3,
 
 				// Default values
-				Port:                  8080,
+				Port:                  2342,
 				RedisPassword:         "",
 				RedisTLS:              "",
 				RedisURL:              "",

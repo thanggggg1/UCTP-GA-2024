@@ -26,4 +26,5 @@ func NewScheduleRouter(env *bootstrap.Env, timeout time.Duration, db gorm.DB, gr
 		}
 	}()
 	group.POST("/schedule", sc.CreateSchedule)
+	group.GET("/schedule", sc.ClearEventStream)
 }

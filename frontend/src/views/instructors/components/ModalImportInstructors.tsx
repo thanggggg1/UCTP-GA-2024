@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useImportInstructorsMutation } from "@/store/APIs/instructors";
+import { useGetCurrentUserQuery } from "@/store/APIs/user";
 
 export default function ModalImportInstructors({
   open,
@@ -27,6 +28,7 @@ export default function ModalImportInstructors({
   onOpenChange: (open: boolean) => void;
 }) {
   const [file, setFile] = useState<File | null>(null);
+  const { data: currentUser } = useGetCurrentUserQuery();
 
   const [
     importEmployeesExcel,
@@ -94,10 +96,13 @@ export default function ModalImportInstructors({
       toast.warning("Please select a file to import");
       return;
     }
-    importEmployeesExcel({ file });
+    importEmployeesExcel({
+      file,
+      university_id: currentUser?.UniversityID || "",
+    });
     setFile(null);
     hide();
-  }, [file, importEmployeesExcel, hide]);
+  }, [file, importEmployeesExcel, hide, currentUser?.UniversityID]);
 
   const onCanceled = useCallback(() => {
     setFile(null);

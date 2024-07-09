@@ -56,11 +56,13 @@ export const coursesApi = createApi({
       void,
       {
         file: File;
+        university_id: string;
       }
     >({
       query: (data) => {
         const formData = new FormData();
         formData.append("file", data.file);
+        formData.append("university_id", data.university_id);
         return {
           url: "courses/import",
           method: "POST",

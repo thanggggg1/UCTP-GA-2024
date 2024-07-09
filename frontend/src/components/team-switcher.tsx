@@ -45,7 +45,7 @@ const exampleGroups = [
     label: "Personal Account",
     teams: [
       {
-        label: "Alicia Koch",
+        label: "University Account",
         value: "personal",
       },
     ],

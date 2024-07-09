@@ -28,3 +28,12 @@ func (sc *ScheduleController) CreateSchedule(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "task enqueued"})
 }
+
+func (sc *ScheduleController) ClearEventStream(c *gin.Context) {
+	err := sc.ScheduleUsecase.ClearEventStream()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "stream cleared"})
+}

@@ -136,7 +136,7 @@ func (iu *instructorUsecase) FetchByID(c context.Context, id uint) (domain.Instr
 	var instructor domain.Instructor
 	return instructor, iu.repo.WithContext(ctx).First(&instructor, id).Error
 }
-func (iu *instructorUsecase) ImportFromXLSX(ctx context.Context, filePath string) error {
+func (iu *instructorUsecase) ImportFromXLSX(ctx context.Context, filePath string, universityID uint) error {
 	file, err := xlsx.OpenFile(filePath)
 	if err != nil {
 		return err
@@ -178,6 +178,7 @@ func (iu *instructorUsecase) ImportFromXLSX(ctx context.Context, filePath string
 			}
 			instructor.Schedule = scheduleJSON
 			instructor.Status = domain.ACTIVE
+			instructor.UniversityID = universityID
 
 			instructors = append(instructors, instructor)
 		}
@@ -197,6 +198,8 @@ func (iu *instructorUsecase) ImportFromXLSX(ctx context.Context, filePath string
 			existingInstructor.Schedule = instructor.Schedule
 			existingInstructor.Status = instructor.Status
 			existingInstructor.Email = instructor.Email
+			existingInstructor.Password = instructor.Password
+			existingInstructor.UniversityID = universityID
 
 			if instructor.Password != "" {
 				encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(instructor.Password), bcrypt.DefaultCost)
@@ -208,10 +211,11 @@ func (iu *instructorUsecase) ImportFromXLSX(ctx context.Context, filePath string
 
 			// Update the associated user
 			user := &domain.User{
-				ID:    existingInstructor.UserID,
-				Email: instructor.Email,
-				Name:  instructor.Name,
-				Role:  domain.UserRole("INSTRUCTOR"),
+				ID:           existingInstructor.UserID,
+				Email:        instructor.Email,
+				Name:         instructor.Name,
+				Role:         domain.UserRole("INSTRUCTOR"),
+				UniversityID: strconv.Itoa(int(universityID)),
 			}
 
 			if instructor.Password != "" {
@@ -233,10 +237,11 @@ func (iu *instructorUsecase) ImportFromXLSX(ctx context.Context, filePath string
 				return err
 			}
 			user := &domain.User{
-				Email:    instructor.Email,
-				Password: string(encryptedPassword),
-				Name:     instructor.Name,
-				Role:     domain.UserRole("INSTRUCTOR"),
+				Email:        instructor.Email,
+				Password:     string(encryptedPassword),
+				Name:         instructor.Name,
+				Role:         domain.UserRole("INSTRUCTOR"),
+				UniversityID: strconv.Itoa(int(universityID)),
 			}
 
 			err = iu.repo.WithContext(ctx).Create(user).Error

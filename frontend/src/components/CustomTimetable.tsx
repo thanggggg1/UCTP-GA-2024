@@ -29,7 +29,7 @@ export const CustomTimeTable = () => {
         // editable={true}
         selectable={true}
         selectMirror={true}
-        resourceAreaWidth={"%"}
+        resourceAreaWidth={"10%"}
         slotMinTime={"09:00:00"}
         slotMaxTime={"18:00:00"}
         weekends={false}
@@ -54,24 +54,24 @@ export const CustomTimeTable = () => {
           {
             id: "a",
             building: "D9",
-            title: "501",
+            title: "Example room 01",
             occupancy: 40,
           },
           {
             id: "b",
             building: "D9",
-            title: "502",
+            title: "Example room 02",
             occupancy: 40,
           },
           {
             id: "c",
             building: "D9",
-            title: "503",
+            title: "Example room 03",
             occupancy: 40,
           },
         ]}
         initialEvents={[
-          { title: "Start programming", start: new Date(), resourceId: "a" },
+          { title: "Example Course", start: new Date(), resourceId: "a" },
         ]}
       />
     </div>

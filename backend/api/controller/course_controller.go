@@ -103,6 +103,17 @@ func (tc *CourseController) ImportFromXLSX(c *gin.Context) {
 		return
 	}
 
+	universityIDStr := c.PostForm("university_id")
+	if universityIDStr == "" {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: "university_id is required"})
+		return
+	}
+	universityID, err := strconv.ParseUint(universityIDStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: "Invalid university_id format"})
+		return
+	}
+
 	// Open the uploaded file
 	fileContent, err := file.Open()
 	if err != nil {
@@ -126,7 +137,7 @@ func (tc *CourseController) ImportFromXLSX(c *gin.Context) {
 	}
 
 	// Call the use case to import from XLSX
-	err = tc.CourseUseCase.ImportFromXLSX(c, tempFile.Name())
+	err = tc.CourseUseCase.ImportFromXLSX(c, tempFile.Name(), uint(universityID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return

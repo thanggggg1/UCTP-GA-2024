@@ -52,4 +52,5 @@ type ScheduleUsecase interface {
 	NewScheduleTask(universityID uint, semesterID uint) (*asynq.Task, error)
 	FetchData(universityID uint, semesterID uint) (DataSchedule, error)
 	UpsertScheduleTask(universityID uint, semesterID uint) error
+	ClearEventStream() error
 }

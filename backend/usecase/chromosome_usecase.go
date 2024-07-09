@@ -122,11 +122,13 @@ func (c *Chromosome) InsertSchedule(schedule []int) int {
 
 	data := c.Data
 	courseDetails := domain.CourseDetails{
-		RoomID:       schedule[0],
-		InstructorID: schedule[3],
-		Days:         []int{schedule[4]},
-		StartSlot:    schedule[5],
-		Length:       schedule[6],
+		RoomID:         schedule[0],
+		InstructorID:   schedule[3],
+		Days:           []int{schedule[4]},
+		StartSlot:      schedule[5],
+		Length:         schedule[6],
+		CourseName:     c.RawData.Courses[schedule[2]].Name,
+		InstructorName: c.RawData.Instructors[schedule[3]].Name,
 	}
 
 	//insert details into section data

@@ -22,3 +22,20 @@ export interface ICourseDetail {
     Schedule: string[][];
   };
 }
+
+export interface IRealTimeChromosome {
+  Fitness: number;
+  FitnessDetails: number[];
+  Semesters: ICourseDetail;
+  Settings: ISetting;
+}
+
+export interface IRealTimeData {
+  Data: {
+    Semesters: ICourseDetail;
+  };
+  Fitness: number;
+  FitnessDetails: number[];
+  Semesters: ICourseDetail;
+  Settings: ISetting;
+}
