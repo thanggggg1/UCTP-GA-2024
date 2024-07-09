@@ -13,7 +13,7 @@ import (
 
 func Setup(env *bootstrap.Env, timeout time.Duration, db *gorm.DB, router *gin.Engine, client *asynq.Client, srv *asynq.Server) {
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"}, // Update with your frontend's origin
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
