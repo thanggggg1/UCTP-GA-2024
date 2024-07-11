@@ -10,7 +10,7 @@ export const authApi = createApi({
   reducerPath: "authApi",
   tagTypes: ["auth", "user"],
   baseQuery: fetchBaseQuery({
-    baseUrl: `${process.env.HOST}`,
+    baseUrl: `${process.env.HOST}/api`,
   }),
   endpoints: (builder) => ({
     signIn: builder.mutation<ILoginResponse, LoginParams>({

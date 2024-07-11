@@ -51,7 +51,7 @@ export const transformResponse = <T>(response: ApiResponse<T>): T => {
   throw new Error("Unexpected API response format"); // Or return an ApiError
 };
 
-export const getBaseQuery = (baseUrl = `${process.env.HOST}`) => {
+export const getBaseQuery = (baseUrl = `${process.env.HOST}/api`) => {
   return fetchBaseQuery({
     baseUrl,
     prepareHeaders: async (headers) => {
