@@ -133,6 +133,42 @@ func (tu *courseUsecase) Delete(ctx context.Context, id uint) error {
 	// Commit the transaction
 	return tx.Commit().Error
 }
+func (tu *courseUsecase) DeleteMany(ctx context.Context, ids []uint) error {
+	// Start a transaction
+	tx := tu.repo.WithContext(ctx).Begin()
+
+	for _, id := range ids {
+		// Find the course to be deleted
+		var course domain.Course
+		if err := tx.First(&course, id).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				tx.Rollback()
+				return errors.New("one or more courses not found")
+			}
+			tx.Rollback()
+			return err
+		}
+
+		// Delete the associations in the many-to-many join tables
+		if err := tx.Model(&course).Association("Semester").Clear(); err != nil {
+			tx.Rollback()
+			return err
+		}
+		if err := tx.Model(&course).Association("Instructors").Clear(); err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// Delete the course
+		if err := tx.Delete(&course).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	// Commit the transaction
+	return tx.Commit().Error
+}
 func (tu *courseUsecase) FetchAll(ctx context.Context, filter map[string]interface{}) ([]domain.Course, error) {
 	ctx, cancel := context.WithTimeout(ctx, tu.contextTimeout)
 	defer cancel()
@@ -234,6 +270,8 @@ func (tu *courseUsecase) ImportFromXLSX(ctx context.Context, filePath string, un
 						}
 						course.InstructorIds = instructorIDs
 					}
+				case 8:
+					course.NumOfRegistrations, _ = cell.Int()
 				}
 			}
 
@@ -259,6 +297,7 @@ func (tu *courseUsecase) ImportFromXLSX(ctx context.Context, filePath string, un
 			existingCourse.Description = course.Description
 			existingCourse.Divisible = course.Divisible
 			existingCourse.Type = course.Type
+			existingCourse.NumOfRegistrations = course.NumOfRegistrations
 			existingCourse.InstructorIds = course.InstructorIds
 			existingCourse.UniversityID = universityID
 

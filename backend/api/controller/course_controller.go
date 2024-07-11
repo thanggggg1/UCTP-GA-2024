@@ -96,6 +96,24 @@ func (tc *CourseController) Delete(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, gin.H{"message": "Course deleted"})
 }
+func (tc *CourseController) DeleteMany(c *gin.Context) {
+	var ids struct {
+		IDs []uint `json:"ids" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&ids); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: "Invalid request"})
+		return
+	}
+
+	if err := tc.CourseUseCase.DeleteMany(c, ids.IDs); err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Courses deleted successfully"})
+}
+
 func (tc *CourseController) ImportFromXLSX(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {

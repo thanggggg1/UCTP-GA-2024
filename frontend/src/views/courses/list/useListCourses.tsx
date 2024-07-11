@@ -132,15 +132,15 @@ const useListCourses = () => {
       enableSorting: false,
       enableHiding: false,
     },
-    {
-      accessorKey: "code_hp",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Course class code" />
-      ),
-      cell: ({ row }) => <div>{row.getValue("code_hp")}</div>,
-      enableSorting: false,
-      enableHiding: false,
-    },
+    // {
+    //   accessorKey: "code_hp",
+    //   header: ({ column }) => (
+    //     <DataTableColumnHeader column={column} title="Course class code" />
+    //   ),
+    //   cell: ({ row }) => <div>{row.getValue("code_hp")}</div>,
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
     {
       accessorKey: "name",
       header: ({ column }) => (
@@ -154,6 +154,13 @@ const useListCourses = () => {
         <DataTableColumnHeader column={column} title="Time duration" />
       ),
       cell: ({ row }) => <div>{row.getValue("hours")}</div>,
+    },
+    {
+      accessorKey: "num_of_registrations",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Registrations" />
+      ),
+      cell: ({ row }) => <div>{row.getValue("num_of_registrations")}</div>,
     },
     {
       accessorKey: "type",

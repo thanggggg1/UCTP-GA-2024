@@ -40,6 +40,11 @@ func (tu *roomUsecase) Delete(c context.Context, id uint) error {
 	defer cancel()
 	return tu.repo.WithContext(ctx).Delete(&domain.Room{}, id).Error
 }
+func (tu *roomUsecase) DeleteMany(c context.Context, ids []uint) error {
+	ctx, cancel := context.WithTimeout(c, tu.contextTimeout)
+	defer cancel()
+	return tu.repo.WithContext(ctx).Where("id IN ?", ids).Delete(&domain.Room{}).Error
+}
 
 func (tu *roomUsecase) FetchAll(ctx context.Context, filter map[string]interface{}) ([]domain.Room, error) {
 	ctx, cancel := context.WithTimeout(ctx, tu.contextTimeout)
@@ -98,6 +103,8 @@ func (tu *roomUsecase) ImportFromXLSX(ctx context.Context, filePath string, univ
 					room.Name = text
 				case 2:
 					room.Type = domain.RoomType(text)
+				case 3:
+					room.Size, _ = cell.Int()
 				}
 			}
 

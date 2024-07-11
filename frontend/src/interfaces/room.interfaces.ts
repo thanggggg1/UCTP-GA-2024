@@ -8,5 +8,5 @@ export interface IRoom {
   schedule: string[][];
   status: EStatus;
   university_id: number;
-  // size: number;
+  size: number;
 }

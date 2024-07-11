@@ -10,4 +10,5 @@ export const defaultRoomConfig: IRoom = {
   type: ERoomType.LEC,
   schedule: defaultSchedule,
   status: EStatus.ACTIVE,
+  size: 0,
 };

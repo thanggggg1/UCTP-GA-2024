@@ -24,7 +24,9 @@ export const GridTimetable = memo(function GridTimetable({
     return rooms.map((room) => ({
       id: room.id.toString(),
       title: room.name,
+      type: room.type,
       occupancy: 40,
+      size: room.size,
     }));
   }, [rooms]);
 
@@ -69,7 +71,7 @@ export const GridTimetable = memo(function GridTimetable({
         titleFormat={{ year: "numeric", month: "short", day: "numeric" }}
         initialView="resourceTimelineWeek"
         nowIndicator={true}
-        themeSystem="sandstone"
+        themeSystem="bootstrap5"
         // editable={true}
         selectable={true}
         selectMirror={true}
@@ -77,6 +79,31 @@ export const GridTimetable = memo(function GridTimetable({
         slotMinTime={formattedTimeslots.minTime}
         slotMaxTime={formattedTimeslots.maxTime}
         weekends={false}
+        // slotLabelFormat={{
+        //   hour: "2-digit",
+        //   minute: "2-digit",
+        //   hour12: false,
+        // }}
+        eventContent={(arg) => {
+          console.log(arg);
+          return (
+            <div className="flex flex-col gap-1">
+              <b className="font-medium">{arg.event._def.title}</b>
+              <i>{arg.event._def.extendedProps.instructor}</i>
+            </div>
+          );
+        }}
+        resourceLabelContent={(arg) => {
+          return (
+            <div>
+              <b>{arg.resource.title}</b>
+              <div>
+                {arg.resource._resource.extendedProps.type} -{" "}
+                {arg.resource._resource.extendedProps.size}
+              </div>
+            </div>
+          );
+        }}
         // resourceGroupField="building"
         // resourceAreaColumns={[
         //   {

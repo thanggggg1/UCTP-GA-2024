@@ -174,6 +174,13 @@ const useListRooms = () => {
       },
     },
     {
+      accessorKey: "size",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Capacity" />
+      ),
+      cell: ({ row }) => <div>{row.getValue("size")}</div>,
+    },
+    {
       id: "actions",
       cell: ({ row }) => (
         <>

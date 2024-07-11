@@ -21,5 +21,6 @@ func NewRoomRouter(env *bootstrap.Env, timeout time.Duration, db gorm.DB, group 
 	group.GET("/rooms/:id", tc.FetchByID)
 	group.PUT("/rooms/:id", tc.Update)
 	group.DELETE("/rooms/:id", tc.Delete)
+	group.POST("/rooms-delete", tc.DeleteMany)
 	group.POST("/rooms/import", tc.ImportFromXLSX)
 }

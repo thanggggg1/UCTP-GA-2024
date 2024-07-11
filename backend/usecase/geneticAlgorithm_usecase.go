@@ -42,8 +42,8 @@ type GeneticAlgorithm struct {
 }
 
 // NewGeneticAlgorithm creates a new GeneticAlgorithm
-func NewGeneticAlgorithm(data domain.DataSchedule, clientChan chan string, db gorm.DB, UniversityID uint, SemesterID uint) *GeneticAlgorithm {
-	settings := DefaultConfig
+func NewGeneticAlgorithm(data domain.DataSchedule, clientChan chan string, db gorm.DB, UniversityID uint, SemesterID uint, setting domain.Setting) *GeneticAlgorithm {
+	settings := setting
 	ga := &GeneticAlgorithm{
 		Running:            true,
 		Data:               data,
@@ -85,30 +85,24 @@ func (ga *GeneticAlgorithm) GenerateChromosome(quantity int) {
 		ga.sendSignal(domain.StatusSignal, statusMessage)
 		ga.sendSignal(domain.ProgressBarSignal, (i+1)*100/quantity)
 		ga.TempChromosome = NewChromosome(ga.Data, ga.Settings)
-		log.Printf("Started chromosome creation #%d\n", i+1)
 		sections := make(map[int][]int)
 		for key, value := range ga.Data.Semesters {
 			courseIds := ConvertUintSliceToIntSlice(value.CourseIds)
-			log.Printf("Semester %d has courses: %v\n", key, courseIds)
 			sections[key] = courseIds
 		}
-		log.Printf("Sections: %v\n", sections)
 		ga.GenerateSubjectPlacementsForSections(sections)
-		log.Printf("Generated placements for chromosome #%d\n", i+1)
 		ga.Chromosomes = append(ga.Chromosomes, ga.TempChromosome)
 	}
-	log.Printf("Total chromosomes generated: %d\n", len(ga.Chromosomes))
 }
 
 func (ga *GeneticAlgorithm) GenerateSubjectPlacementsForSections(sections map[int][]int) {
-	log.Println("Entered GenerateSubjectPlacementsForSections")
+	//log.Println("Entered GenerateSubjectPlacementsForSections")
 	maxSubjects := 0
 	for _, subjects := range sections {
 		if len(subjects) > maxSubjects {
 			maxSubjects = len(subjects)
 		}
 	}
-	log.Printf("Max subjects in any section: %d\n", maxSubjects)
 
 	for i := 0; i < maxSubjects; i++ {
 		for section, subjectList := range sections {
@@ -116,33 +110,33 @@ func (ga *GeneticAlgorithm) GenerateSubjectPlacementsForSections(sections map[in
 				continue
 			}
 			subjectToPlace := rand.Intn(len(subjectList))
-			log.Printf("Placing subject %d in section %d\n", subjectList[subjectToPlace], section)
+			//log.Printf("Placing subject %d in section %d\n", subjectList[subjectToPlace], section)
 			result := ga.GenerateSubjectPlacement([]int{section}, subjectList[subjectToPlace])
 			if !result {
 				ga.TempChromosome.Data.Unplaced[section] = append(ga.TempChromosome.Data.Unplaced[section], subjectList[subjectToPlace])
-				log.Printf("Could not place subject %d in section %d\n", subjectList[subjectToPlace], section)
+				//log.Printf("Could not place subject %d in section %d\n", subjectList[subjectToPlace], section)
 			} else {
-				log.Printf("Successfully placed subject %d in section %d\n", subjectList[subjectToPlace], section)
+				//log.Printf("Successfully placed subject %d in section %d\n", subjectList[subjectToPlace], section)
 			}
 
 			// Log the current state before modification
-			log.Printf("Before modification - Section: %d, Subjects: %v, Subject to place: %d\n", section, subjectList, subjectToPlace)
+			//log.Printf("Before modification - Section: %d, Subjects: %v, Subject to place: %d\n", section, subjectList, subjectToPlace)
 
 			// Create a new slice to avoid modifying the existing slice reference
 			newSubjectList := append(subjectList[:subjectToPlace], subjectList[subjectToPlace+1:]...)
 			sections[section] = newSubjectList
 
 			// Log the current state after modification
-			log.Printf("After modification - Section %d: %v\n", section, sections[section])
+			//log.Printf("After modification - Section %d: %v\n", section, sections[section])
 		}
 	}
-	log.Println("Completed GenerateSubjectPlacementsForSections")
+	//log.Println("Completed GenerateSubjectPlacementsForSections")
 }
 
 // GenerateSubjectPlacement generates a subject placement within a section
 func (ga *GeneticAlgorithm) GenerateSubjectPlacement(section []int, subject int) bool {
-	log.Printf("Entering GenerateSubjectPlacement for sections: %v, subject: %d\n", section, subject)
-	defer log.Printf("Exiting GenerateSubjectPlacement for sections: %v, subject: %d\n", section, subject)
+	//log.Printf("Entering GenerateSubjectPlacement for sections: %v, subject: %d\n", section, subject)
+	//defer log.Printf("Exiting GenerateSubjectPlacement for sections: %v, subject: %d\n", section, subject)
 
 	generating := true
 	generationAttempt := 0
@@ -155,10 +149,10 @@ func (ga *GeneticAlgorithm) GenerateSubjectPlacement(section []int, subject int)
 
 	for generating {
 		generationAttempt++
-		log.Printf("Generation attempt %d for subject %d in section %v\n with error %d", generationAttempt, subject, section, errorState)
+		//log.Printf("Generation attempt %d for subject %d in section %v\n with error %d", generationAttempt, subject, section, errorState)
 		if generationAttempt > ga.Settings.GenerationTolerance {
 			generating = false
-			log.Printf("Exceeded generation tolerance for subject %d in section %v\n", subject, section)
+			//log.Printf("Exceeded generation tolerance for subject %d in section %v\n", subject, section)
 			return false
 		}
 
@@ -166,61 +160,61 @@ func (ga *GeneticAlgorithm) GenerateSubjectPlacement(section []int, subject int)
 			var err error
 			room, err = ga.SelectRoom(subject)
 			if err != nil {
-				log.Printf("Error selecting room: %v\n", err)
+				//log.Printf("Error selecting room: %v\n", err)
 				return false
 			}
-			log.Printf("Selected room %d for subject %d\n", room, subject)
+			//log.Printf("Selected room %d for subject %d\n", room, subject)
 
 			if len(subjectDetails.InstructorIds) > 1 {
 				instructor = ga.SelectInstructor(subject)
-				log.Printf("Selected instructor %d for subject %d\n", instructor, subject)
+				//log.Printf("Selected instructor %d for subject %d\n", instructor, subject)
 			} else if len(subjectDetails.InstructorIds) == 1 {
 				instructor = int(subjectDetails.InstructorIds[0])
-				log.Printf("Single instructor %d for subject %d\n", instructor, subject)
+				//log.Printf("Single instructor %d for subject %d\n", instructor, subject)
 			} else {
 				instructor = 0
-				log.Printf("No instructor for subject %d\n", subject)
+				//log.Printf("No instructor for subject %d\n", subject)
 			}
 			timeDetails = ga.SelectTimeDetails(subject)
-			log.Printf("Selected time details %v for subject %d\n", timeDetails, subject)
+			//log.Printf("Selected time details %v for subject %d\n", timeDetails, subject)
 		} else {
 			if errorState == 1 || errorState == 2 {
 				if rand.Intn(2) == 0 {
 					errorState = 3
-					log.Printf("Changing to time error state for subject %d\n", subject)
+					//log.Printf("Changing to time error state for subject %d\n", subject)
 				} else if errorState == 1 {
 					var err error
 					room, err = ga.SelectRoom(subject)
 					if err != nil {
-						log.Printf("Error selecting room: %v\n", err)
+						//log.Printf("Error selecting room: %v\n", err)
 						return false
 					}
-					log.Printf("Selected room %d for subject %d\n", room, subject)
+					//log.Printf("Selected room %d for subject %d\n", room, subject)
 				} else {
 					if len(subjectDetails.InstructorIds) > 1 {
 						instructor = ga.SelectInstructor(subject)
-						log.Printf("Selected new instructor %d for subject %d\n", instructor, subject)
+						//log.Printf("Selected new instructor %d for subject %d\n", instructor, subject)
 					} else {
 						errorState = 3
-						log.Printf("Switching to time error state for subject %d\n", subject)
+						//log.Printf("Switching to time error state for subject %d\n", subject)
 					}
 				}
 			} else if errorState == 3 || errorState == 4 {
 				timeDetails = ga.SelectTimeDetails(subject)
-				log.Printf("Selected new time details %v for subject %d\n", timeDetails, subject)
+				//log.Printf("Selected new time details %v for subject %d\n", timeDetails, subject)
 			}
 		}
 
 		scheduleToInsert := []int{room, section[0], subject, instructor, timeDetails[0], timeDetails[1], timeDetails[2]}
 		errorState = ga.TempChromosome.InsertSchedule(scheduleToInsert)
-		log.Printf("Attempted to insert schedule %v for subject %d, errorState: %d\n", scheduleToInsert, subject, errorState)
+		//log.Printf("Attempted to insert schedule %v for subject %d, errorState: %d\n", scheduleToInsert, subject, errorState)
 
 		if errorState == 5 {
-			log.Printf("Successfully placed subject %d\n", subject)
+			//log.Printf("Successfully placed subject %d\n", subject)
 			return true
 		}
 	}
-	log.Printf("Failed to place subject %d\n", subject)
+	//log.Printf("Failed to place subject %d\n", subject)
 	return false
 }
 
@@ -230,8 +224,10 @@ func (ga *GeneticAlgorithm) SelectRoom(subject int) (int, error) {
 		roomKeys = append(roomKeys, key)
 	}
 
-	maxAttempts := 1000 // Define a reasonable maximum number of attempts
+	maxAttempts := 2000 // Define a reasonable maximum number of attempts
 	attempts := 0
+
+	courseRegistrations := ga.Data.Courses[subject].NumOfRegistrations
 
 	for {
 		attempts++
@@ -241,7 +237,9 @@ func (ga *GeneticAlgorithm) SelectRoom(subject int) (int, error) {
 
 		candidateIndex := rand.Intn(len(roomKeys))
 		candidate := roomKeys[candidateIndex]
-		if ga.Data.Courses[subject].Type == ga.Data.Rooms[candidate].Type {
+		room := ga.Data.Rooms[candidate]
+
+		if ga.Data.Courses[subject].Type == room.Type && room.Size >= courseRegistrations {
 			return candidate, nil
 		}
 	}
@@ -263,11 +261,16 @@ func (ga *GeneticAlgorithm) SelectInstructor(subject int) int {
 }
 
 func (ga *GeneticAlgorithm) SelectTimeDetails(subject int) []int {
-	days := rand.Perm(6)
+	days := rand.Perm(5)
 	hours := int(ga.Data.Courses[subject].Hours)
 	selectedDay := days[0]
-	startingTime := ga.Settings.StartingTime
-	endingTime := ga.Settings.EndingTime
+	var timeslots []string
+	if err := json.Unmarshal(ga.Settings.Timeslots, &timeslots); err != nil {
+		log.Printf("Error unmarshaling timeslots: %v", err)
+	}
+
+	startingTime := 0
+	endingTime := len(timeslots)
 
 	startingTimeslotStatus := false
 	var startingTimeslot int
@@ -645,8 +648,8 @@ func (ga *GeneticAlgorithm) Crossover() {
 func copyChromosomes(chromosomes []*Chromosome) []*Chromosome {
 	copies := make([]*Chromosome, len(chromosomes))
 	for i, chromosome := range chromosomes {
-		copy := *chromosome
-		copies[i] = &copy
+		_copy := *chromosome
+		copies[i] = &_copy
 	}
 	return copies
 }
@@ -787,7 +790,9 @@ func (ga *GeneticAlgorithm) RunGeneration() {
 			ga.sendSignal(domain.OperationSignal, 1)
 			// Save top chromosomes to the database
 			topChromosomeData := ga.GetTopChromosomeData(5)
-			if err := ga.SaveTopChromosomeDataToDB(topChromosomeData); err != nil {
+			numIterations, successCount, totalCount := calculateMetrics(ga)
+
+			if err := ga.SaveTopChromosomeDataToDB(topChromosomeData, numIterations, successCount, totalCount); err != nil {
 				log.Println("Error saving top chromosome data to database:", err)
 			}
 
@@ -834,7 +839,7 @@ func (ga *GeneticAlgorithm) GetTopChromosomeData(n int) []domain.ChromosomeData 
 	}
 	return topChromosomeData
 }
-func (ga *GeneticAlgorithm) SaveTopChromosomeDataToDB(topChromosomeData []domain.ChromosomeData) error {
+func (ga *GeneticAlgorithm) SaveTopChromosomeDataToDB(topChromosomeData []domain.ChromosomeData, numIterations int, successCount int, totalCount int) error {
 
 	for _, data := range topChromosomeData {
 		// Enhance the data with instructor names and course names
@@ -872,12 +877,18 @@ func (ga *GeneticAlgorithm) SaveTopChromosomeDataToDB(topChromosomeData []domain
 		if err != nil {
 			return err
 		}
+		successRate := float64(successCount) / float64(totalCount) * 100
 
 		result := domain.Result{
 			UniversityID:   ga.UniversityID,
 			SemesterID:     ga.SemesterID,
 			TopChromosomes: datatypes.JSON(semesterDataJSON),
 			Timestamp:      time.Now(),
+			NumIterations:  numIterations,
+			SuccessCount:   successCount,
+			TotalCount:     totalCount,
+			SuccessRate:    successRate,
+			AverageFitness: int(ga.AverageFitness),
 		}
 
 		if err := ga.DB.Create(&result).Error; err != nil {
@@ -885,4 +896,15 @@ func (ga *GeneticAlgorithm) SaveTopChromosomeDataToDB(topChromosomeData []domain
 		}
 	}
 	return nil
+}
+func calculateMetrics(ga *GeneticAlgorithm) (numIterations int, successCount int, totalCount int) {
+	totalCount = 0
+	successCount = 0
+	for _, chromosome := range ga.Chromosomes {
+		if chromosome.Fitness >= ga.AverageFitness {
+			successCount++
+		}
+		totalCount++
+	}
+	return len(ga.Chromosomes), successCount, totalCount
 }

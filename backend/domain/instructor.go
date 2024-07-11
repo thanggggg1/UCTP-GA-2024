@@ -25,6 +25,7 @@ type InstructorUsecase interface {
 	Create(c context.Context, instructor *Instructor) error
 	Update(c context.Context, instructor *Instructor) error
 	Delete(c context.Context, id uint) error
+	DeleteMany(c context.Context, ids []uint) error
 	FetchAll(c context.Context, filter map[string]interface{}) ([]Instructor, error)
 	FetchByID(c context.Context, id uint) (Instructor, error)
 	ImportFromXLSX(c context.Context, filePath string, universityID uint) error

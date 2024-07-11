@@ -40,9 +40,13 @@ func (uc *scheduleUsecase) HandleScheduleTask(ctx context.Context, t *asynq.Task
 	if err != nil {
 		return err
 	}
-	log.Printf("data: %+v", data)
+	// Fetch semester
+	var setting domain.Setting
+	if err := uc.db.Where("university_id = ?", payload.UniversityID).First(&setting).Error; err != nil {
+		return err
+	}
 	// Run your genetic algorithm here and save the result
-	geneticAlgorithm := NewGeneticAlgorithm(data, clientChan, uc.db, payload.UniversityID, payload.SemesterID)
+	geneticAlgorithm := NewGeneticAlgorithm(data, clientChan, uc.db, payload.UniversityID, payload.SemesterID, setting)
 	geneticAlgorithm.RunGeneration()
 
 	return nil
@@ -72,12 +76,13 @@ func (uc *scheduleUsecase) UpsertScheduleTask(universityID uint, semesterID uint
 	if err != nil {
 		return err
 	}
+	uc.HandleScheduleTask(context.Background(), task)
 	// Run your genetic algorithm here and save the result
-	info, err := uc.client.Enqueue(task)
-	if err != nil {
-		log.Fatalf("could not enqueue task: %v", err)
-	}
-	log.Printf("enqueued task: id=%s queue=%s", info.ID, info.Queue)
+	//info, err := uc.client.Enqueue(task)
+	//if err != nil {
+	//	log.Fatalf("could not enqueue task: %v", err)
+	//}
+	//log.Printf("enqueued task: id=%s queue=%s", info.ID, info.Queue)
 	return nil
 }
 

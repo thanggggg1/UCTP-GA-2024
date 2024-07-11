@@ -14,6 +14,11 @@ type Result struct {
 	University     University     `gorm:"foreignKey:UniversityID" json:"university"`
 	SemesterID     uint           `json:"semester_id" binding:"required"`
 	TopChromosomes datatypes.JSON `json:"top_chromosomes"`
+	NumIterations  int            `json:"num_iterations"`
+	AverageFitness int            `json:"average_fitness"`
+	SuccessCount   int            `json:"success_count"`
+	TotalCount     int            `json:"total_count"`
+	SuccessRate    float64        `json:"success_rate"`
 }
 
 type ResultUsecase interface {

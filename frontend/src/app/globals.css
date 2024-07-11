@@ -25,6 +25,11 @@
     --input: 240 5.9% 90%;
     --ring: 142.1 76.2% 36.3%;
     --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
   }
 
   .dark {
@@ -47,6 +52,11 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 142.4 71.8% 29.2%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
   @layer base {
@@ -152,4 +162,73 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Increase the height of events */
+.fc-event {
+  min-height: 60px !important;
+  line-height: 1.2em;
+  font-size: 14px;
+}
+
+/* Remove borders and add custom background and text colors */
+.fc-event {
+  border: none !important;
+  /* Change to your desired background color */
+  /* Change to your desired text color */
+  border-radius: 4px !important;
+  /* Optional: add rounded corners */
+  padding: 5px;
+}
+
+/* Customize the appearance of the time grid */
+.fc-timegrid-event {
+  border: none !important;
+  border-radius: 4px !important;
+}
+
+/* Customize the header */
+.fc-col-header-cell {
+  background-color: #fff;
+  /* Change to your desired header background color */
+  color: #343a40;
+  /* Change to your desired header text color */
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Customize the resource labels */
+.fc-resource-label {
+  background-color: #fff;  /* Change to your desired resource label background color */
+  color: #343a40;
+  /* Change to your desired resource label text color */
+  padding: 5px;
+  border-right: 1px solid #ddd;
+}
+
+/* Increase row height */
+.fc-scrollgrid-sync-table tbody tr {
+  /* Change to your desired row height */
+}
+
+/* Customize the slot time header */
+.fc-timegrid-slot-label {
+  background-color: #f8f9fa;
+  /* Change to your desired slot time header background color */
+  color: #343a40;
+  /* Change to your desired slot time header text color */
+  font-weight: bold;
+  text-align: center;
+}
+.fc-datagrid-cell-frame{
+  background-color: #FFF;
+}
+.fc-scrollgrid-sync-inner{
+  font-weight: 500;
+}
+.fc-timeline-slot-frame{
+  background-color: #fff;
+}
+.fc td, .fc th{
+    background-color: #fbf7f4 !important;
 }

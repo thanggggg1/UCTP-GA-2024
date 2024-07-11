@@ -56,6 +56,11 @@ export default function ModalImportRooms({
       { header: "Mã phòng", key: "code", width: 20 },
       { header: "Tên phòng", key: "name", width: 60 },
       { header: "Loại phòng", key: "type", width: 20 },
+      {
+        header: "Sức chứa",
+        key: "size",
+        width: 20,
+      },
       { header: "Lịch rảnh", key: "schedule", width: 50 },
       { header: "Trạng thái", key: "status", width: 20 },
     ];

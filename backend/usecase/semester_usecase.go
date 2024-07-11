@@ -124,23 +124,42 @@ func (tu *semesterUsecase) FetchByID(c context.Context, id uint) (domain.Semeste
 	return semester, nil
 }
 func (tu *semesterUsecase) AssignCourses(c context.Context, semesterID uint, courseIDs []uint) error {
-	// Find the semester
+	ctx, cancel := context.WithTimeout(c, tu.contextTimeout)
+	defer cancel()
+
+	// Start a transaction
+	tx := tu.repo.WithContext(ctx).Begin()
+
+	// Find the semester to assign courses to
 	var semester domain.Semester
-	if err := tu.repo.WithContext(c).First(&semester, semesterID).Error; err != nil {
+	if err := tx.First(&semester, semesterID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			tx.Rollback()
+			return errors.New("semester not found")
+		}
+		tx.Rollback()
 		return err
 	}
 
-	// Find the courses
+	// Find the courses to be assigned
 	var courses []domain.Course
-	if err := tu.repo.WithContext(c).Where("id IN ?", courseIDs).Find(&courses).Error; err != nil {
+	if err := tx.Where("id IN ?", courseIDs).Find(&courses).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 
+	// Check if all courses were found
 	if len(courses) != len(courseIDs) {
+		tx.Rollback()
 		return errors.New("some courses not found")
 	}
 
-	// Assign courses to the semester
-	semester.Courses = courses
-	return tu.repo.WithContext(c).Save(&semester).Error
+	// Assign the courses to the semester
+	if err := tx.Model(&semester).Association("Courses").Replace(courses); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Commit the transaction
+	return tx.Commit().Error
 }

@@ -176,6 +176,16 @@ export function EditRoomConfig({ id }: { id?: number | string }) {
                         />
                       </div>
                       <div className="grid gap-3">
+                        <Label htmlFor="code">Capacity</Label>
+                        <Input
+                          id="size"
+                          type="number"
+                          className="w-full"
+                          value={roomEditing.size}
+                          onChange={(e) => handleEdit("size", e.target.value)}
+                        />
+                      </div>
+                      <div className="grid gap-3">
                         <Label htmlFor="type">Room Type</Label>
                         <Select
                           value={roomEditing.type}

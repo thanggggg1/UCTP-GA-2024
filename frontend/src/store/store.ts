@@ -18,6 +18,7 @@ import { usersApi } from "./APIs/user";
 import { settingsApi } from "./APIs/settings";
 import { schedulesApi } from "./APIs/schedule";
 import { resultsApi } from "./APIs/result";
+import { metricsApi } from "./APIs/metrics";
 
 // Root reducer combining all the reducers
 const rootReducer = combineReducers({
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   [settingsApi.reducerPath]: settingsApi.reducer,
   [schedulesApi.reducerPath]: schedulesApi.reducer,
   [resultsApi.reducerPath]: resultsApi.reducer,
+  [metricsApi.reducerPath]: metricsApi.reducer,
 
   //slice
   [instructorSlice.name]: instructorSlice.reducer,
@@ -66,7 +68,8 @@ export const setupStore = () => {
           usersApi.middleware,
           settingsApi.middleware,
           schedulesApi.middleware,
-          resultsApi.middleware
+          resultsApi.middleware,
+          metricsApi.middleware
         ),
   });
   const persistor = persistStore(store);

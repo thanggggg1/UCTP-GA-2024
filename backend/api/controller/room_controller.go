@@ -104,6 +104,23 @@ func (tc *RoomController) Delete(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, nil)
 }
+func (tc *RoomController) DeleteMany(c *gin.Context) {
+	var ids struct {
+		IDs []uint `json:"ids" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&ids); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: "Invalid request"})
+		return
+	}
+
+	if err := tc.RoomUsecase.DeleteMany(c, ids.IDs); err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Rooms deleted successfully"})
+}
 
 func (tc *RoomController) ImportFromXLSX(c *gin.Context) {
 	file, err := c.FormFile("file")

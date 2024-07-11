@@ -86,6 +86,19 @@ export const coursesApi = createApi({
       }),
       invalidatesTags: ["courses"],
     }),
+    deleteManyCourses: builder.mutation<
+      void,
+      {
+        ids: number[];
+      }
+    >({
+      query: (args) => ({
+        url: `/courses-delete`,
+        method: "POST",
+        body: args,
+      }),
+      invalidatesTags: ["courses"],
+    }),
   }),
 });
 
@@ -97,4 +110,5 @@ export const {
   useUpdateCourseMutation,
   useImportCoursesMutation,
   useDeleteCourseMutation,
+  useDeleteManyCoursesMutation,
 } = coursesApi;

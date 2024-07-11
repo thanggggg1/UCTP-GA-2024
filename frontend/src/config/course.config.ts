@@ -10,6 +10,7 @@ export const defaultCourseConfig: ICourse = {
   code_hp: "",
   description: "",
   hours: 0,
+  num_of_registrations: 0,
   divisible: false,
   type: ERoomType.LEC,
 };

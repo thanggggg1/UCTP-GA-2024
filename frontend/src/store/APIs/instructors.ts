@@ -88,6 +88,19 @@ export const instructorsApi = createApi({
       }),
       invalidatesTags: ["instructors"],
     }),
+    deleteManyInstructors: builder.mutation<
+      void,
+      {
+        ids: number[];
+      }
+    >({
+      query: (args) => ({
+        url: `/instructors-delete`,
+        method: "POST",
+        body: args,
+      }),
+      invalidatesTags: ["instructors"],
+    }),
   }),
 });
 
@@ -99,4 +112,5 @@ export const {
   useUpdateInstructorMutation,
   useImportInstructorsMutation,
   useDeleteInstructorMutation,
+  useDeleteManyInstructorsMutation,
 } = instructorsApi;

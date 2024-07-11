@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/tealeg/xlsx"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -85,24 +86,82 @@ func (iu *instructorUsecase) Update(c context.Context, instructor *domain.Instru
 	return iu.repo.WithContext(ctx).Save(instructor).Error
 }
 
-func (iu *instructorUsecase) Delete(c context.Context, id uint) error {
-	ctx, cancel := context.WithTimeout(c, iu.contextTimeout)
+func (iu *instructorUsecase) Delete(ctx context.Context, id uint) error {
+	ctx, cancel := context.WithTimeout(ctx, iu.contextTimeout)
 	defer cancel()
 
-	instructor := &domain.Instructor{}
-	err := iu.repo.WithContext(ctx).First(instructor, id).Error
-	if err != nil {
+	// Start a transaction
+	tx := iu.repo.WithContext(ctx).Begin()
+
+	// Find the instructor to be deleted
+	var instructor domain.Instructor
+	if err := tx.First(&instructor, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			tx.Rollback()
+			return errors.New("instructor not found")
+		}
+		tx.Rollback()
+		return err
+	}
+
+	// Clear the association with courses
+	if err := tx.Model(&instructor).Association("Courses").Clear(); err != nil {
+		tx.Rollback()
 		return err
 	}
 
 	// Delete the associated User
-	err = iu.repo.WithContext(ctx).Delete(&domain.User{}, instructor.UserID).Error
-	if err != nil {
+	if err := tx.Delete(&domain.User{}, instructor.UserID).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 
 	// Delete the Instructor
-	return iu.repo.WithContext(ctx).Delete(instructor).Error
+	if err := tx.Delete(&instructor).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Commit the transaction
+	return tx.Commit().Error
+}
+
+func (iu *instructorUsecase) DeleteMany(ctx context.Context, ids []uint) error {
+	// Start a transaction
+	tx := iu.repo.WithContext(ctx).Begin()
+
+	for _, id := range ids {
+		// Find the instructor to be deleted
+		var instructor domain.Instructor
+		if err := tx.First(&instructor, id).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				tx.Rollback()
+				return errors.New("one or more instructors not found")
+			}
+			tx.Rollback()
+			return err
+		}
+
+		if err := tx.Model(&instructor).Association("Courses").Clear(); err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// Delete the associated User
+		if err := tx.Delete(&domain.User{}, instructor.UserID).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		// Delete the Instructor
+		if err := tx.Delete(&instructor).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	// Commit the transaction
+	return tx.Commit().Error
 }
 
 func (iu *instructorUsecase) FetchAll(ctx context.Context, filter map[string]interface{}) ([]domain.Instructor, error) {

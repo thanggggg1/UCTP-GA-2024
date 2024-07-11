@@ -40,6 +40,7 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db *gorm.DB, router *gin.E
 	NewResultRouter(env, timeout, *db, protectedRouter)
 	NewSettingRouter(env, timeout, *db, protectedRouter)
 	NewUserRouter(env, timeout, *db, protectedRouter)
+	NewMetricsRouter(env, timeout, *db, protectedRouter)
 	NewScheduleRouter(env, timeout, *db, publicRouter, client, srv)
 	// SSE endpoint
 	router.GET("/events", func(c *gin.Context) {

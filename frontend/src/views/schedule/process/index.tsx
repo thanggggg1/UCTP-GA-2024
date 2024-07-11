@@ -262,7 +262,7 @@ export const ScheduleProcessView = memo(function ScheduleProcessView() {
 
             {/* </form> */}
             <Label>{`The level: ${progressMessages}`}</Label>
-            <Progress value={progressBar} className="w-[60%]" />
+            <Progress value={progressBar} className="w-[100%]" />
           </div>
         </main>
         <Button

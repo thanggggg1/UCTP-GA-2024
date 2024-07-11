@@ -31,12 +31,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filterComponent?: JSX.Element;
+  setSelectedIds?: (ids: number[]) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   filterComponent,
+  setSelectedIds,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -67,6 +69,13 @@ export function DataTable<TData, TValue>({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
+
+  useEffect(() => {
+    setSelectedIds?.(
+      // @ts-ignore
+      table.getSelectedRowModel().flatRows.map((row) => row.original.id)
+    );
+  }, [rowSelection, table, setSelectedIds]);
 
   return (
     <div className="space-y-4">

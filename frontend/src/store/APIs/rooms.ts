@@ -88,6 +88,19 @@ export const roomsApi = createApi({
       }),
       invalidatesTags: ["rooms"],
     }),
+    deleteManyRooms: builder.mutation<
+      void,
+      {
+        ids: number[];
+      }
+    >({
+      query: (args) => ({
+        url: `/rooms-delete`,
+        method: "POST",
+        body: args,
+      }),
+      invalidatesTags: ["rooms"],
+    }),
   }),
 });
 
@@ -99,4 +112,5 @@ export const {
   useUpdateRoomMutation,
   useImportRoomsMutation,
   useDeleteRoomMutation,
+  useDeleteManyRoomsMutation,
 } = roomsApi;

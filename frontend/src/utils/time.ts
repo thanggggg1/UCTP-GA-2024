@@ -38,7 +38,8 @@ export function convertToEvents(
       endDateTime.setHours(endHour, endMinute, 0, 0);
 
       events.push({
-        title: `${detail.CourseName} - ${detail.InstructorName}`,
+        title: `${detail.CourseName}`,
+        instructor: detail.InstructorName,
         start: startDateTime,
         end: endDateTime,
         resourceId: detail.RoomID,
@@ -105,22 +106,9 @@ export function convertToEventsBasecInstructorID(
 }
 
 const colors = [
-  "#1E90FF", // Dodger Blue
-  "#FF4500", // Orange Red
-  "#32CD32", // Lime Green
-  "#8A2BE2", // Blue Violet
-  "#FF1493", // Deep Pink
-  "#FF6347", // Tomato
-  "#40E0D0", // Turquoise
-  "#FFD700", // Gold
-  "#FF69B4", // Hot Pink
-  "#4169E1", // Royal Blue
-  "#00FA9A", // Medium Spring Green
-  "#FF8C00", // Dark Orange
-  "#FF00FF", // Magenta
-  "#00CED1", // Dark Turquoise
-  "#7B68EE", // Medium Slate Blue
-  "#DC143C", // Crimson
+  "#4CA37E", // Dodger Blue
+  "#255DB3", // Orange Red
+  "#E99E3A", // Lime Green
 ];
 
 function pickRandomColor(excludeColor: string = "#FFFFFF"): string {
@@ -129,4 +117,94 @@ function pickRandomColor(excludeColor: string = "#FFFFFF"): string {
     randomColor = colors[Math.floor(Math.random() * colors.length)];
   }
   return randomColor;
+}
+
+interface InstructorCourseCount {
+  id: number;
+  name: string;
+  count: number;
+}
+
+interface TimeSlotCount {
+  day: number;
+  time: string;
+  count: number;
+}
+
+export function analyzeResult(courses: ICourseDetail, timeslots: string[]) {
+  const instructorCourseMap: { [key: string]: { id: number; count: number } } =
+    {};
+  const timeSlotCountMap: { [key: string]: number } = {};
+
+  for (const courseKey in courses) {
+    const courseDetails = courses[courseKey].Details;
+
+    for (const detailKey in courseDetails) {
+      const detail = courseDetails[detailKey];
+
+      // Count courses handled by each instructor
+      const instructorName = detail.InstructorName;
+      const instructorId = detail.InstructorID;
+      if (!instructorCourseMap[instructorName]) {
+        instructorCourseMap[instructorName] = { id: instructorId, count: 0 };
+      }
+      instructorCourseMap[instructorName].count++;
+
+      // Count each timeslot for peak slot time
+      detail.Days?.forEach((day) => {
+        for (let i = 0; i < detail.Length; i++) {
+          const startSlotIndex = detail.StartSlot + i;
+          const timeslot = `${day}-${timeslots[startSlotIndex]}`;
+
+          if (!timeSlotCountMap[timeslot]) {
+            timeSlotCountMap[timeslot] = 0;
+          }
+          timeSlotCountMap[timeslot]++;
+        }
+      });
+    }
+  }
+
+  // Convert instructorCourseMap to array
+  const instructorCourseCount: InstructorCourseCount[] = Object.keys(
+    instructorCourseMap
+  ).map((name) => ({
+    id: instructorCourseMap[name].id,
+    name,
+    count: instructorCourseMap[name].count,
+  }));
+
+  // Find the peak slot time
+  const peakSlotTimes: TimeSlotCount[] = Object.keys(timeSlotCountMap).map(
+    (timeslot) => {
+      const [day, time] = timeslot.split("-");
+      return {
+        day: parseInt(day),
+        time,
+        count: timeSlotCountMap[timeslot],
+      };
+    }
+  );
+
+  // Find the busiest time slots
+  peakSlotTimes.sort((a, b) => b.count - a.count);
+
+  return { instructorCourseCount, peakSlotTimes };
+}
+
+export function convertDaytoText(day: number) {
+  switch (day) {
+    case 1:
+      return "Monday";
+    case 2:
+      return "Tuesday";
+    case 3:
+      return "Wednesday";
+    case 4:
+      return "Thursday";
+    case 5:
+      return "Friday";
+    default:
+      return "";
+  }
 }

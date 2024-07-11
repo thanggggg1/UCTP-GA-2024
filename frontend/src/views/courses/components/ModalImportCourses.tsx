@@ -60,6 +60,11 @@ export default function ModalImportCourses({
       { header: "Lập lịch", key: "divisible", width: 40 },
       { header: "Loại lớp", key: "type", width: 50 },
       { header: "Giảng viên", key: "instructor_ids", width: 50 },
+      {
+        header: "Sinh viên đăng kí",
+        key: "num_of_registrations",
+        width: 20,
+      },
     ];
     //set style for header
     worksheet.getRow(1).eachCell((cell) => {

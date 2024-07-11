@@ -21,5 +21,6 @@ func NewInstructorRouter(env *bootstrap.Env, timeout time.Duration, db gorm.DB, 
 	group.GET("/instructors/:id", tc.FetchByID)
 	group.PUT("/instructors/:id", tc.Update)
 	group.DELETE("/instructors/:id", tc.Delete)
+	group.POST("/instructors-delete", tc.DeleteMany)
 	group.POST("/instructors/import", tc.ImportFromXLSX)
 }
