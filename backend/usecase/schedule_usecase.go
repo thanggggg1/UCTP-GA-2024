@@ -76,13 +76,12 @@ func (uc *scheduleUsecase) UpsertScheduleTask(universityID uint, semesterID uint
 	if err != nil {
 		return err
 	}
-	uc.HandleScheduleTask(context.Background(), task)
-	// Run your genetic algorithm here and save the result
-	//info, err := uc.client.Enqueue(task)
-	//if err != nil {
-	//	log.Fatalf("could not enqueue task: %v", err)
-	//}
-	//log.Printf("enqueued task: id=%s queue=%s", info.ID, info.Queue)
+	//Run your genetic algorithm here and save the result
+	info, err := uc.client.Enqueue(task)
+	if err != nil {
+		log.Fatalf("could not enqueue task: %v", err)
+	}
+	log.Printf("enqueued task: id=%s queue=%s", info.ID, info.Queue)
 	return nil
 }
 
